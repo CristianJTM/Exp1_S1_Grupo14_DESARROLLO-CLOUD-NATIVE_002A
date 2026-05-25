@@ -38,6 +38,8 @@ public class CursoService {
         curso.setNombre(cursoDTO.getNombre());
         curso.setDescripcion(cursoDTO.getDescripcion());
         curso.setProfesor(profesor);
+        curso.setDuracion(cursoDTO.getDuracion());
+        curso.setCosto(cursoDTO.getCosto());
 
         return cursoRepository.save(curso);
     }
@@ -49,6 +51,8 @@ public class CursoService {
         Long profesorId = cursoDTO.getProfesorId();
         Usuario profesor = usuarioRepository.findById(profesorId).orElseThrow(() -> new ResourceNotFoundException("Profesor no encontrado"));
         curso.setProfesor(profesor);
+        curso.setDuracion(cursoDTO.getDuracion());
+        curso.setCosto(cursoDTO.getCosto());
         return cursoRepository.save(curso);
     }
 

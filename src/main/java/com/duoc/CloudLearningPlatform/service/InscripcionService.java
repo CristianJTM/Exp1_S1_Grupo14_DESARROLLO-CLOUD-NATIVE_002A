@@ -1,7 +1,9 @@
 package com.duoc.CloudLearningPlatform.service;
 
 
+import com.duoc.CloudLearningPlatform.dto.CursoResumenDTO;
 import com.duoc.CloudLearningPlatform.dto.InscripcionDTO;
+import com.duoc.CloudLearningPlatform.dto.InscripcionResumenDTO;
 import com.duoc.CloudLearningPlatform.exception.ResourceNotFoundException;
 import com.duoc.CloudLearningPlatform.model.Curso;
 import com.duoc.CloudLearningPlatform.model.Inscripcion;
@@ -28,6 +30,31 @@ public class InscripcionService {
 
     public List<Inscripcion> findByCurso(Long cursoId){
         return inscripcionRepository.findByCursoId(cursoId);
+    }
+
+    public InscripcionResumenDTO findByEstudiante(Long estudianteId){
+        List<Inscripcion> inscripciones = inscripcionRepository.findByEstudianteId(estudianteId);
+
+        InscripcionResumenDTO inscripcionResumenDTO = new InscripcionResumenDTO();
+
+        if(inscripciones.isEmpty()){
+            throw new ResourceNotFoundException("Inscripcion no encontrada");
+        }
+
+        inscripcionResumenDTO.setEstudiante(inscripciones.get(0).getEstudiante().getNombre());
+
+        List<CursoResumenDTO> cursos = inscripciones.stream().map(inscripcion -> {
+            CursoResumenDTO cursoResumenDTO = new CursoResumenDTO();
+            cursoResumenDTO.setNombre(inscripcion.getCurso().getNombre());
+            cursoResumenDTO.setCosto(inscripcion.getCurso().getCosto());
+            return cursoResumenDTO;
+        }).toList();
+
+        inscripcionResumenDTO.setCursos(cursos);
+
+        inscripcionResumenDTO.setTotal(cursos.stream().mapToDouble(CursoResumenDTO::getCosto).sum());
+
+        return inscripcionResumenDTO;
     }
 
     public Inscripcion saveInscripcion(InscripcionDTO inscripcionDTO){
